@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Wordle API</title>
+  <script>
+    const words = ["apple", "grape", "mango", "peach", "lemon", "melon", "berry"];
+    let secretWord = words[Math.floor(Math.random() * words.length)];
+
+    function checkGuess(guess) {
+      guess = guess.toLowerCase();
+      let result = [];
+
+      for (let i = 0; i < guess.length; i++) {
+        if (guess[i] === secretWord[i]) {
+          result.push("green");
+        } else if (secretWord.includes(guess[i])) {
+          result.push("yellow");
+        } else {
+          result.push("gray");
+        }
+      }
+
+      return {
+        guess,
+        result,
+        correct: guess === secretWord
+      };
+    }
+
+    window.addEventListener("message", (event) => {
+      if (event.data.type === "guess") {
+        const response = checkGuess(event.data.word);
+        window.parent.postMessage(response, "*");
+      }
+
+      if (event.data.type === "newgame") {
+        secretWord = words[Math.floor(Math.random() * words.length)];
+        window.parent.postMessage({ message: "New game started" }, "*");
+      }
+    });
+  </script>
+</head>
+<body>
+  <h2>Wordle API Ready</h2>
+</body>
+</html>
